@@ -496,7 +496,7 @@ def run_unittest_files(files: List[str], timeout_per_file: float):
             )
             assert ret_code == 0
         except TimeoutError:
-            kill_child_process(process.pid)
+            kill_child_process(process.pid, include_self=True)
             time.sleep(5)
             print(
                 f"\nTimeout after {timeout_per_file} seconds when running {filename}\n",
@@ -564,7 +564,7 @@ def run_bench_serving(
     try:
         res = run_benchmark(args)
     finally:
-        kill_child_process(process.pid)
+        kill_child_process(process.pid, include_self=True)
 
     assert res["completed"] == num_prompts
     return res
@@ -597,7 +597,7 @@ def run_bench_latency(model, other_args):
         lastline = output.split("\n")[-3]
         output_throughput = float(lastline.split(" ")[-2])
     finally:
-        kill_child_process(process.pid)
+        kill_child_process(process.pid, include_self=True)
 
     return output_throughput
 
@@ -708,8 +708,8 @@ def run_mmlu_test(
         pass
 
     # Clean up everything
-    kill_child_process(process.pid)
-    kill_child_process(process.pid)
+    kill_child_process(process.pid, include_self=True)
+    kill_child_process(process.pid, include_self=True)
     stdout.close()
     stderr.close()
     if os.path.exists(STDOUT_FILENAME):
